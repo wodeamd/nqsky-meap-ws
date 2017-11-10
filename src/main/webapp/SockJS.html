@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>Tomcat WebSocket</title>
+	<script src="https://cdn.jsdelivr.net/npm/sockjs-client@1/dist/sockjs.min.js"></script>
+    <script src="stomp.js"></script>
+    <script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+    <script src="http://requirejs.org/docs/release/2.2.0/minified/require.js"></script>
+</head>
+<body>
+	<form>
+		<input id="message" type="text">
+		<input onclick="wsSendMessage();" value="Echo" type="button">
+		<input onclick="wsCloseConnection();" value="Disconnect" type="button">
+	</form>
+	<br>
+	<textarea id="echoText" rows="5" cols="30"></textarea>
+
+	<script type="text/javascript">
+        var echoText = document.getElementById("echoText");
+
+        var webSocket = new SockJS("http://localhost:8084/ws/question1");
+
+        client = Stomp.over(webSocket);
+        client.connect({},function (frame) {
+            client.subscribe("/topic/question", function (message) {
+                console.log( message);
+                echoText.value = "Message received from to the server : " + message.body + "\n";
+            });
+            client.subscribe("/user/queue/private", function (message) {
+                echoText.value = "Message received from to the server : " + message.body + "\n";
+            });
+            // Sample to send to private queue
+            // client.send("/user/annoyed-caiman-698815110/queue/private",{},"Hi annoyed-caiman-698815110");
+        },function (error) {
+            console.log("Error " + error )
+
+        });
+
+		echoText.value = "";
+
+
+		function wsSendMessage(){
+            echoText.value += "Message sended to the server : " + message.value + "\n";
+            client.send("/app/question", {}, message.value);
+
+			message.value = "";
+		}
+	</script>
+</body>
+</html>

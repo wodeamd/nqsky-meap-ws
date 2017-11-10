@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xmlns:meap="http://meap.nationsky.com/schema/meap"
+       xmlns:websocket="http://www.springframework.org/schema/websocket"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+       	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd
+    	http://meap.nationsky.com/schema/meap http://meap.nationsky.com/schema/meap/nqsky-meap.xsd http://www.springframework.org/schema/websocket http://www.springframework.org/schema/websocket/spring-websocket.xsd">
+
+    <bean class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+        <property name="locations">
+            <list>
+                <value>classpath:meap.properties</value>
+            </list>
+        </property>
+    </bean>
+    <meap:module name="${meap.module.name}"/>
+
+    <meap:registry address="${meap.registry.address}"/>
+
+    <meap:protocol name="socket" port="${meap.protocol.port}" />
+
+    <context:component-scan base-package="com.nqsky.meap">
+        <context:include-filter type="regex" expression="com/.nqsky/.meap/.ws/.*/.*" />
+    </context:component-scan>
+
+    <meap:export  interface="com.nqsky.meap.api.notify.IBroadCastService" class="com.nqsky.meap.ws.service.NotificationDriver" />
+
+</beans>
